@@ -1,12 +1,14 @@
-import mysql.connector
-import os
+# bd.py
+import pymysql
+# Importamos las constantes directamente desde el archivo
+from variables import DB_HOST, DB_USERNAME, DB_PASSWORD, DB_PORT, DB_DATABASE
 
 def obtener_conexion():
-    # Estas variables las leerá de Docker. 
-    # Si no existen (en local), usará los valores por defecto (localhost).
-    return mysql.connector.connect(
-        host=os.getenv('DB_HOST', 'localhost'),
-        user=os.getenv('DB_USER', 'root'),
-        password=os.getenv('DB_PASSWORD', 'root_password'), # Pon la que uses en MariaDB
-        database=os.getenv('DB_NAME', 'gimnasio')
+    return pymysql.connect(
+        host=DB_HOST,
+        user=DB_USERNAME,
+        password=DB_PASSWORD,
+        port=DB_PORT,
+        db=DB_DATABASE,
+        cursorclass=pymysql.cursors.DictCursor # Esto hace que los resultados sean diccionarios
     )
