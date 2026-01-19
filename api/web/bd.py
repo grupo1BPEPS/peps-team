@@ -1,9 +1,12 @@
+import mysql.connector
 import os
-import pymysql
 
 def obtener_conexion():
-    return pymysql.connect(host=os.environ.get('DB_HOST'),
-                                user=os.environ.get('DB_USERNAME'),
-                                password=os.environ.get('DB_PASSWORD'),
-                                port=int(os.environ.get('DB_PORT', 3306)),
-                                db=os.environ.get('DB_DATABASE'))
+    # Estas variables las leerá de Docker. 
+    # Si no existen (en local), usará los valores por defecto (localhost).
+    return mysql.connector.connect(
+        host=os.getenv('DB_HOST', 'localhost'),
+        user=os.getenv('DB_USER', 'root'),
+        password=os.getenv('DB_PASSWORD', 'root_password'), # Pon la que uses en MariaDB
+        database=os.getenv('DB_NAME', 'gimnasio')
+    )
