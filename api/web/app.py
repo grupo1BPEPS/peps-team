@@ -24,7 +24,7 @@ def create_app():
 
 
 
-    
+## TESTEO DE ACCESO A LA BBDD ##
     @app.route('/test-db')
     def test_db():
         from bd import obtener_conexion

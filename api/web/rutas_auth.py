@@ -45,5 +45,6 @@ def login():
 # 3. LOGOUT
 @bp.route('/logout', methods=['POST', 'GET'])
 def logout():
-    session.clear()
+    controlador_usuarios.cerrar_sesion()
+    #session.clear()
     return jsonify({"mensaje": "Sesión cerrada correctamente"}), 200

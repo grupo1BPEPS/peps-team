@@ -4,7 +4,8 @@ USE gym_app;
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 0
 );
 
 CREATE TABLE ejercicios (
@@ -64,4 +65,7 @@ VALUES (
 
 CREATE USER IF NOT EXISTS 'appuser'@'%' IDENTIFIED BY 'AppPassword123!';
 GRANT ALL PRIVILEGES ON gym_app.* TO 'appuser'@'%';
+FLUSH PRIVILEGES;
+CREATE USER IF NOT EXISTS 'alumno'@'localhost' IDENTIFIED BY 'alumno';
+GRANT ALL PRIVILEGES ON peps_team.* TO 'alumno'@'localhost';
 FLUSH PRIVILEGES;

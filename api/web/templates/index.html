@@ -141,12 +141,14 @@
         <input type="number" id="dias" min="1" max="5">
 
         <button onclick="crearRutina()">Generar rutina</button>
-        <button onclick="cerrarSesion()">Cerrar sesion</button>
+        <button onclick="logout()">Cerrar sesion</button>
         <div id="resultado" class="rutina"></div>
     </section>
 
 </main>
 <script>
+    // función acceder
+    
     function login() {
     fetch('/api/auth/login', {
         method: 'POST',
@@ -166,6 +168,35 @@
             alert(data.error || 'Login incorrecto');
         }
     });}
+
+    //funcion de logout no funcional aun mejorada
+
+
+ 
+    //FUNCION DE LOGOUT MALA
+
+    function logout() {
+    fetch('/api/auth/logout', {
+        method: 'POST',
+        //headers: {'Content-Type': 'application/json'},
+        //body: JSON.stringify({
+        //    username: document.getElementById('username').value,
+        //    password: document.getElementById('password').value
+        //})
+    })
+    .then(res => res.json().then(data => ({ status: res.status, data })))
+    .then(({ status, data }) => {
+        if (status === 200) {
+            //usuario_id = data.usuario.id;
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('rutina-section').classList.add('hidden');
+            alert("Sesión cerrada con éxito")
+        } else {
+            alert(data.error || 'Algo ha ocurrido');
+        }
+    });
+}
+
 
     function crearRutina() {
         const rutina = {
