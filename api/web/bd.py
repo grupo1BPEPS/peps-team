@@ -1,14 +1,16 @@
 # bd.py
+import os
 import pymysql
-# Importamos las constantes directamente desde el archivo
-from variables import DB_HOST, DB_USERNAME, DB_PASSWORD, DB_PORT, DB_DATABASE
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def obtener_conexion():
     return pymysql.connect(
-        host=DB_HOST,
-        user=DB_USERNAME,
-        password=DB_PASSWORD,
-        port=DB_PORT,
-        db=DB_DATABASE,
-        cursorclass=pymysql.cursors.DictCursor # Esto hace que los resultados sean diccionarios
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        port=int(os.getenv("DB_PORT", 3306)),
+        database=os.getenv("DB_NAME"),
+        cursorclass=pymysql.cursors.DictCursor
     )

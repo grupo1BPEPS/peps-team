@@ -54,3 +54,14 @@ INSERT INTO ejercicios (nombre, grupo_muscular, nivel) VALUES
 ('Sentadilla', 'Piernas', 'principiante'),
 ('Press banca', 'Pecho', 'intermedio'),
 ('Dominadas', 'Espalda', 'avanzado');
+
+INSERT INTO usuarios (username, password)
+VALUES (
+  'admin',
+  'scrypt:32768:8:1$QQlHBhSQNI3Gsx19$d6dec7d7f06cc019d96d4768abcee9536adf392650c33ac03fc0d2a79913dfab126057f1bbfd2186ca031c0e41fd22c49002fd7756f57d815d602ae07c9c3b93'
+);
+
+
+CREATE USER IF NOT EXISTS 'appuser'@'%' IDENTIFIED BY 'AppPassword123!';
+GRANT ALL PRIVILEGES ON gym_app.* TO 'appuser'@'%';
+FLUSH PRIVILEGES;

@@ -1,12 +1,12 @@
 from bd import obtener_conexion
 
 # 1. CREAR (Create)
-def insertar_rutina(nombre, descripcion, usuario_id):
+def insertar_rutina(nombre, objetivo, dias, usuario_id):
     conexion = obtener_conexion()
     with conexion.cursor() as cursor:
         cursor.execute(
-            "INSERT INTO rutinas (nombre_rutina, descripcion, usuario_id) VALUES (%s, %s, %s)",
-            (nombre, descripcion, usuario_id)
+            "INSERT INTO rutinas (nombre, objetivo, dias, usuario_id) VALUES (%s, %s, %s %s)",
+            (nombre, objetivo, dias, usuario_id)
         )
     conexion.commit()
     id_creado = cursor.lastrowid

@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, session
 import controlador_usuarios
 
 # Definimos el blueprint con el nombre 'bp' como espera tu app.py
-bp = Blueprint('auth', __name__)
+bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 # 1. REGISTRO DE USUARIOS
 @bp.route('/register', methods=['POST'])
@@ -28,7 +28,7 @@ def login():
     password = datos.get('password')
 
     usuario = controlador_usuarios.validar_login(username, password)
-
+    print("JSON recibido:", request.json)
     if usuario:
         # Guardamos el ID en la sesión de Flask (opcional para APIs, pero útil)
         session['usuario_id'] = usuario['id']

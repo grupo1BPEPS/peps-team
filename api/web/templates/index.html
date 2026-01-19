@@ -66,11 +66,39 @@
             border: 1px solid #ddd;
         }
     </style>
+    <script>
+        var myHeaders = new Headers()
+        myHeaders.append("Content-Type", "application/json")
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            fetch("/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                if (data.mensaje) {
+                    alert("Login correcto");
+                } else {
+                    alert(data.error);
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 
 <header>
-    <h1>🏋️ Gym Routine Generator</h1>
+    <h1>Gym Routine Generator</h1>
 </header>
 
 <main>
@@ -80,7 +108,7 @@
         <h2>Login</h2>
 
         <label>Usuario</label>
-        <input type="text" id="username">
+        <input type="text" id="username" >
 
         <label>Contraseña</label>
         <input type="password" id="password">
@@ -93,7 +121,7 @@
         <h2>Generar rutina</h2>
 
         <label>Nombre de la rutina</label>
-        <input type="text" id="nombre_rutina">
+        <input type="text" id="nombreRutina">
 
         <label>Objetivo</label>
         <select id="objetivo">
@@ -113,56 +141,59 @@
         <input type="number" id="dias" min="1" max="7">
 
         <button onclick="crearRutina()">Generar rutina</button>
-
+        <button onclick="cerrarSesion()">Cerrar sesion</button>
         <div id="resultado" class="rutina"></div>
     </section>
 
 </main>
-
 <script>
-    let usuario_id = null;
-
     function login() {
-        fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                username: document.getElementById('username').value,
-                password: document.getElementById('password').value
-            })
+    fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.usuario_id) {
-                usuario_id = data.usuario_id;
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('rutina-section').classList.remove('hidden');
-            } else {
-                alert('Login incorrecto');
-            }
-        });
-    }
+    })
+    .then(res => res.json().then(data => ({ status: res.status, data })))
+    .then(({ status, data }) => {
+        if (status === 200) {
+            usuario_id = data.usuario.id;
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('rutina-section').classList.remove('hidden');
+        } else {
+            alert(data.error || 'Login incorrecto');
+        }
+    });}
 
     function crearRutina() {
         const rutina = {
-            nombre: document.getElementById('nombre_rutina').value,
-            objetivo: document.getElementById('objetivo').value,
-            dias: document.getElementById('dias').value,
-            usuario_id: usuario_id
-        };
-
+            nombre: document.getElementById("nombreRutina").value,
+            objetivo: document.getElementById("objetivo").value,
+            dias: document.getElementById("dias").value,
+        }
         fetch('/api/rutinas', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(rutina)
         })
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('resultado').innerHTML =
-                `<strong>Rutina creada correctamente</strong><br>ID: ${data.id || ''}`;
-        });
-    }
+        .then(res => res.json().then(data => ({ status: res.status, data})))
+        .then(({ status, data }) => {
+                if (status === 201 || status === 200) {
+                    document.getElementById('resultado').innerHTML =
+                        `<strong>Rutina creada correctamente</strong><br>ID: ${data.id ?? ''}`;
+                } else {
+                    document.getElementById('resultado').innerHTML =
+                        `<strong>Error</strong>: ${data.error || 'No se pudo crear la rutina'}`;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('resultado').innerHTML =
+                    `<strong>Error</strong>: fallo de conexión con el servidor`;
+            });}
+    
 </script>
-
 </body>
 </html>
