@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gym Routine Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1f2933;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #1e40af;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .rutina {
+            margin-top: 20px;
+            background: #f9fafb;
+            padding: 15px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🏋️ Gym Routine Generator</h1>
+</header>
+
+<main>
+
+    <!-- LOGIN -->
+    <section id="login-section">
+        <h2>Login</h2>
+
+        <label>Usuario</label>
+        <input type="text" id="username">
+
+        <label>Contraseña</label>
+        <input type="password" id="password">
+
+        <button onclick="login()">Entrar</button>
+    </section>
+
+    <!-- GENERAR RUTINA -->
+    <section id="rutina-section" class="hidden">
+        <h2>Generar rutina</h2>
+
+        <label>Nombre de la rutina</label>
+        <input type="text" id="nombre_rutina">
+
+        <label>Objetivo</label>
+        <select id="objetivo">
+            <option value="fuerza">Fuerza</option>
+            <option value="hipertrofia">Hipertrofia</option>
+            <option value="resistencia">Resistencia</option>
+        </select>
+
+        <label>Nivel</label>
+        <select id="nivel">
+            <option value="principiante">Principiante</option>
+            <option value="intermedio">Intermedio</option>
+            <option value="avanzado">Avanzado</option>
+        </select>
+
+        <label>Días de entrenamiento</label>
+        <input type="number" id="dias" min="1" max="7">
+
+        <button onclick="crearRutina()">Generar rutina</button>
+
+        <div id="resultado" class="rutina"></div>
+    </section>
+
+</main>
+
+<script>
+    let usuario_id = null;
+
+    function login() {
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.usuario_id) {
+                usuario_id = data.usuario_id;
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('rutina-section').classList.remove('hidden');
+            } else {
+                alert('Login incorrecto');
+            }
+        });
+    }
+
+    function crearRutina() {
+        const rutina = {
+            nombre: document.getElementById('nombre_rutina').value,
+            objetivo: document.getElementById('objetivo').value,
+            dias: document.getElementById('dias').value,
+            usuario_id: usuario_id
+        };
+
+        fetch('/api/rutinas', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(rutina)
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('resultado').innerHTML =
+                `<strong>Rutina creada correctamente</strong><br>ID: ${data.id || ''}`;
+        });
+    }
+</script>
+
+</body>
+</html>
