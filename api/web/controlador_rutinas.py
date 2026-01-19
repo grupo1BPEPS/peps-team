@@ -5,6 +5,7 @@ def insertar_rutina(nombre, objetivo, dias, usuario_id):
     conexion = obtener_conexion()
     with conexion.cursor() as cursor:
         cursor.execute(
+            #"SELECT usuario_id FROM usuarios WHERE usuarios.username = ()  "
             "INSERT INTO rutinas (nombre, objetivo, dias, usuario_id) VALUES (%s, %s, %s %s)",
             (nombre, objetivo, dias, usuario_id)
         )

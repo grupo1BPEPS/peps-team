@@ -126,7 +126,7 @@
         <label>Objetivo</label>
         <select id="objetivo">
             <option value="fuerza">Fuerza</option>
-            <option value="hipertrofia">Hipertrofia</option>
+            <option value="hipertrofia">Agilidad</option>
             <option value="resistencia">Resistencia</option>
         </select>
 
@@ -138,7 +138,7 @@
         </select>
 
         <label>Días de entrenamiento</label>
-        <input type="number" id="dias" min="1" max="7">
+        <input type="number" id="dias" min="1" max="5">
 
         <button onclick="crearRutina()">Generar rutina</button>
         <button onclick="cerrarSesion()">Cerrar sesion</button>
@@ -172,6 +172,7 @@
             nombre: document.getElementById("nombreRutina").value,
             objetivo: document.getElementById("objetivo").value,
             dias: document.getElementById("dias").value,
+
         }
         fetch('/api/rutinas', {
             method: 'POST',
