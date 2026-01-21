@@ -1,20 +1,55 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, session
 import controlador_rutinas
 
-bp = Blueprint('rutinas', __name__, url_prefix='/api/')
+bp = Blueprint('rutinas', __name__, url_prefix='/api')
 
-@bp.route('/rutinas/<int:usuario_id>', methods=['GET'])
-def listar(usuario_id):
+
+# =========================
+# CATÁLOGO DE RUTINAS BASE
+# =========================
+@bp.route("/rutinas/base", methods=["GET"])
+def listar_rutinas_base():
+    objetivo = request.args.get("objetivo")
+    nivel = request.args.get("nivel")
+    dias = request.args.get("dias", type=int)
+
+    if not all([objetivo, nivel, dias]):
+        return jsonify({"error": "Faltan filtros"}), 400
+
+    rutinas = controlador_rutinas.obtener_rutinas_filtradas(
+        objetivo, nivel, dias
+    )
+
+    return jsonify(rutinas), 200
+
+
+# =========================
+# RUTINAS DEL USUARIO
+# =========================
+@bp.route("/rutinas/usuario", methods=["GET"])
+def listar_rutinas_usuario():
+    usuario_id = session.get("id_usuario")
+    if not usuario_id:
+        return jsonify({"error": "No autenticado"}), 401
+
     rutinas = controlador_rutinas.obtener_rutinas_usuario(usuario_id)
-    return jsonify(rutinas)
-@bp.route('/rutinas', methods=['POST'])
-def crear():
-    datos = request.json
-    nombre = datos.get('nombre')
-    objetivo = datos.get('objetivo')
-    dias = datos.get('dias')
-    usuario_id = datos.get('usuario_id')  # clave correcta en JSON
-    if usuario_id is None:
-        return jsonify({"error": "usuario_id faltante"}), 400
-    id_nueva = controlador_rutinas.insertar_rutina(nombre, objetivo, dias, usuario_id)
-    return jsonify({"mensaje": "Rutina creada", "id": id_nueva}), 201
+    return jsonify(rutinas), 200
+
+
+@bp.route("/rutinas/usuario", methods=["POST"])
+def guardar_rutina_usuario():
+    usuario_id = session.get("id_usuario")
+    if not usuario_id:
+        return jsonify({"error": "No autenticado"}), 401
+
+    datos = request.get_json()
+    rutina_base_id = datos.get("rutina_base_id")
+
+    if not rutina_base_id:
+        return jsonify({"error": "rutina_base_id obligatorio"}), 400
+
+    controlador_rutinas.guardar_rutina_usuario(
+        usuario_id, rutina_base_id
+    )
+
+    return jsonify({"mensaje": "Rutina guardada en tu perfil"}), 201

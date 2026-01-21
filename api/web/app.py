@@ -1,12 +1,16 @@
-from flask import Flask, render_template, jsonify # Importamos todo desde flask
+from flask import Flask, render_template, jsonify 
+from datetime import timedelta
 from flask_cors import CORS
 import os
 
 def create_app():
     app = Flask(__name__, template_folder='templates')
-    CORS(app)
+    CORS(app, supports_credentials=True, origins=["http://localhost:5000"])
 
     app.config['SECRET_KEY'] = 'gym_secret'
+    app.permanent_session_lifetime = timedelta(hours=1)
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     
     @app.route('/')
     def index():

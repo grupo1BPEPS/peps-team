@@ -10,14 +10,12 @@
             margin: 0;
             padding: 0;
         }
-
         header {
             background-color: #1f2933;
             color: white;
             padding: 15px;
             text-align: center;
         }
-
         main {
             max-width: 800px;
             margin: 30px auto;
@@ -26,23 +24,19 @@
             border-radius: 6px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-
         h2 {
             border-bottom: 1px solid #ddd;
             padding-bottom: 5px;
         }
-
         label {
             display: block;
             margin-top: 15px;
         }
-
         input, select, button {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
         }
-
         button {
             background-color: #2563eb;
             color: white;
@@ -50,15 +44,10 @@
             cursor: pointer;
             margin-top: 20px;
         }
-
         button:hover {
             background-color: #1e40af;
         }
-
-        .hidden {
-            display: none;
-        }
-
+        .hidden { display: none; }
         .rutina {
             margin-top: 20px;
             background: #f9fafb;
@@ -66,34 +55,6 @@
             border: 1px solid #ddd;
         }
     </style>
-    <script>
-        var myHeaders = new Headers()
-        myHeaders.append("Content-Type", "application/json")
-        function login() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-
-            fetch("/api/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-                if (data.mensaje) {
-                    alert("Login correcto");
-                } else {
-                    alert(data.error);
-                }
-            });
-        }
-    </script>
 </head>
 <body>
 
@@ -103,129 +64,240 @@
 
 <main>
 
-    <!-- LOGIN -->
-    <section id="login-section">
-        <h2>Login</h2>
+<!-- LOGIN -->
+<section id="login-section">
+    <h2>Login</h2>
+    <label>Usuario</label>
+    <input type="text" id="username">
+    <label>Contraseña</label>
+    <input type="password" id="password">
+    <button onclick="login()">Entrar</button>
+    <button onclick="showRegister()">Crear cuenta</button>
+</section>
 
-        <label>Usuario</label>
-        <input type="text" id="username" >
+<!-- REGISTER -->
+<section id="register-section" class="hidden">
+    <h2>Registro</h2>
+    <label>Usuario</label>
+    <input type="text" id="username_register">
+    <label>Contraseña</label>
+    <input type="password" id="password_register">
+    <button onclick="register()">Registrarse</button>
+    <button onclick="showLogin()">Volver</button>
+</section>
 
-        <label>Contraseña</label>
-        <input type="password" id="password">
+<!-- BUSCAR RUTINAS -->
+<section id="generar-rutina-section" class="hidden">
+    <h2>Buscar rutina</h2>
 
-        <button onclick="login()">Entrar</button>
-    </section>
+    <label>Objetivo</label>
+    <select id="objetivo">
+        <option value="fuerza">Fuerza</option>
+        <option value="cardio">Cardio</option>
+        <option value="hibrido">Híbrido</option>
+    </select>
 
-    <!-- GENERAR RUTINA -->
-    <section id="rutina-section" class="hidden">
-        <h2>Generar rutina</h2>
+    <label>Nivel</label>
+    <select id="nivel">
+        <option value="basico">Básico</option>
+        <option value="intermedio">Intermedio</option>
+        <option value="avanzado">Avanzado</option>
+    </select>
 
-        <label>Nombre de la rutina</label>
-        <input type="text" id="nombreRutina">
+    <label>Días</label>
+    <input type="number" id="dias" min="1" max="5">
 
-        <label>Objetivo</label>
-        <select id="objetivo">
-            <option value="fuerza">Fuerza</option>
-            <option value="hipertrofia">Agilidad</option>
-            <option value="resistencia">Resistencia</option>
-        </select>
+    <button onclick="buscarRutinas()">Buscar rutinas</button>
+    <button onclick="logout()">Cerrar sesión</button>
 
-        <label>Nivel</label>
-        <select id="nivel">
-            <option value="principiante">Principiante</option>
-            <option value="intermedio">Intermedio</option>
-            <option value="avanzado">Avanzado</option>
-        </select>
+    <div id="listado-rutinas" class="rutina"></div>
+</section>
 
-        <label>Días de entrenamiento</label>
-        <input type="number" id="dias" min="1" max="5">
+<!-- MOSTRAR RUTINA -->
+<section id="mostrar-rutina-section" class="hidden">
+    <h2>Rutina seleccionada</h2>
 
-        <button onclick="crearRutina()">Generar rutina</button>
-        <button onclick="logout()">Cerrar sesion</button>
-        <div id="resultado" class="rutina"></div>
-    </section>
+    <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Día</th>
+                <th>Ejercicio</th>
+                <th>Series</th>
+                <th>Reps / Tiempo</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-rutina"></tbody>
+    </table>
+
+    <button onclick="guardarRutina()">Guardar rutina</button>
+    <button onclick="volverBusqueda()">Volver</button>
+    <button onclick="logout()">Cerrar sesión</button>
+</section>
 
 </main>
+
 <script>
-    // función acceder
-    
-    function login() {
+let rutinasDisponibles = [];
+let rutinaSeleccionadaId = null;
+
+/* =======================
+   AUTENTICACIÓN
+======================= */
+function login() {
+    const usernameInput = document.getElementById("username").value;
+    const passwordInput = document.getElementById("password").value;
+
     fetch('/api/auth/login', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            username: document.getElementById('username').value,
-            password: document.getElementById('password').value
+            username: usernameInput,
+            password: passwordInput
         })
     })
     .then(res => res.json().then(data => ({ status: res.status, data })))
     .then(({ status, data }) => {
         if (status === 200) {
-            usuario_id = data.usuario.id;
+
             document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('rutina-section').classList.remove('hidden');
+            document.getElementById('register-section').classList.add('hidden');
+            document.getElementById('generar-rutina-section').classList.remove('hidden');
+
         } else {
-            alert(data.error || 'Login incorrecto');
-        }
-    });}
-
-    //funcion de logout no funcional aun mejorada
-
-
- 
-    //FUNCION DE LOGOUT MALA
-
-    function logout() {
-    fetch('/api/auth/logout', {
-        method: 'POST',
-        //headers: {'Content-Type': 'application/json'},
-        //body: JSON.stringify({
-        //    username: document.getElementById('username').value,
-        //    password: document.getElementById('password').value
-        //})
-    })
-    .then(res => res.json().then(data => ({ status: res.status, data })))
-    .then(({ status, data }) => {
-        if (status === 200) {
-            //usuario_id = data.usuario.id;
-            document.getElementById('login-section').classList.remove('hidden');
-            document.getElementById('rutina-section').classList.add('hidden');
-            alert("Sesión cerrada con éxito")
-        } else {
-            alert(data.error || 'Algo ha ocurrido');
+            alert(data.error || 'Error de login');
         }
     });
 }
 
 
-    function crearRutina() {
-        const rutina = {
-            nombre: document.getElementById("nombreRutina").value,
-            objetivo: document.getElementById("objetivo").value,
-            dias: document.getElementById("dias").value,
 
-        }
-        fetch('/api/rutinas', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(rutina)
+function register() {
+    const usernameInput = document.getElementById("username_register").value;
+    const passwordInput = document.getElementById("password_register").value;
+
+    fetch("/api/auth/registro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            username: usernameInput,
+            password: passwordInput
         })
-        .then(res => res.json().then(data => ({ status: res.status, data})))
-        .then(({ status, data }) => {
-                if (status === 201 || status === 200) {
-                    document.getElementById('resultado').innerHTML =
-                        `<strong>Rutina creada correctamente</strong><br>ID: ${data.id ?? ''}`;
-                } else {
-                    document.getElementById('resultado').innerHTML =
-                        `<strong>Error</strong>: ${data.error || 'No se pudo crear la rutina'}`;
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                document.getElementById('resultado').innerHTML =
-                    `<strong>Error</strong>: fallo de conexión con el servidor`;
-            });}
-    
+    })
+    .then(() => showLogin());
+}
+
+
+function logout() {
+    fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: "include"
+    })
+    .then(() => {
+
+        document.getElementById('login-section').classList.remove('hidden');
+        document.getElementById('register-section').classList.add('hidden');
+        document.getElementById('generar-rutina-section').classList.add('hidden');
+        document.getElementById('mostrar-rutina-section').classList.add('hidden');
+
+    });
+}
+
+
+/* =======================
+   RUTINAS
+======================= */
+function buscarRutinas() {
+    fetch(`/api/rutinas/base?objetivo=${objetivo.value}&nivel=${nivel.value}&dias=${dias.value}`)
+    .then(r => r.json())
+    .then(data => {
+        rutinasDisponibles = data;
+        pintarListado(data);
+    });
+}
+
+function pintarListado(rutinas) {
+    listado_rutinas.innerHTML = "";
+    if (!rutinas.length) {
+        listado_rutinas.innerHTML = "<p>No hay rutinas disponibles</p>";
+        return;
+    }
+    rutinas.forEach(r => {
+        listado_rutinas.innerHTML += `
+            <div>
+                <strong>${r.nombre}</strong><br>
+                <button onclick="verRutina(${r.id})">Ver</button>
+                <button onclick="guardarRutina(${r.id})">Guardar</button>
+            </div>
+        `;
+    });
+}
+
+function verRutina(id) {
+    const rutina = rutinasDisponibles.find(r => r.id === id);
+    if (!rutina) return;
+
+    rutinaSeleccionadaId = id;
+    pintarRutina(rutina.rutina_json);
+    generar_rutina_section.classList.add("hidden");
+    mostrar_rutina_section.classList.remove("hidden");
+}
+
+function pintarRutina(rutina) {
+    tabla_rutina.innerHTML = "";
+    rutina.dias.forEach(dia => {
+        dia.ejercicios.forEach(ej => {
+            tabla_rutina.innerHTML += `
+                <tr>
+                    <td>Día ${dia.dia}</td>
+                    <td>${ej.nombre}</td>
+                    <td>${ej.series}</td>
+                    <td>${ej.reps}</td>
+                </tr>`;
+        });
+    });
+}
+
+function guardarRutina(id = rutinaSeleccionadaId) {
+    fetch("/api/rutinas/usuario", {
+        method: "POST",
+        credentials: "include",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({rutina_base_id: id})
+    })
+    .then(() => alert("Rutina guardada"));
+}
+
+/* =======================
+   NAVEGACIÓN
+======================= */
+function showLogin() {
+    document.getElementById('login-section').classList.remove('hidden');
+    document.getElementById('register-section').classList.add('hidden');
+    document.getElementById('generar-rutina-section').classList.add('hidden');
+    document.getElementById('mostrar-rutina-section').classList.add('hidden');
+}
+
+
+function showRegister() {
+    document.getElementById('login-section').classList.add('hidden');
+    document.getElementById('register-section').classList.remove('hidden');
+    document.getElementById('generar-rutina-section').classList.add('hidden');
+    document.getElementById('mostrar-rutina-section').classList.add('hidden');
+}
+
+
+function showBusqueda() {
+    login_section.classList.add("hidden");
+    register_section.classList.add("hidden");
+    generar_rutina_section.classList.remove("hidden");
+}
+
+function volverBusqueda() {
+    mostrar_rutina_section.classList.add("hidden");
+    generar_rutina_section.classList.remove("hidden");
+}
 </script>
+
 </body>
 </html>
