@@ -1,11 +1,7 @@
 Flask # la API REST
 flask-cors # llamadas desde frontend o usado postman
-mysql-connector-python # para conectar a la bbdd
 python-dotenv # declaracion de variables de entorno y acceso a ellas
 Werkzeug #hashing de las contraseñas en la bbdd
 pymysql
 jsonify
-json
-datetime
 uuid
-hashlib

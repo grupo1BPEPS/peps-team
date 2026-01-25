@@ -1,47 +1,43 @@
+version: "3.9"
+
 services:
-  mariadb:
-    image: mariadb
-    container_name: mariadb
-    restart: always
-    environment:
-      MARIADB_ROOT_PASSWORD: example
-      MARIADB_USER: agente
-      MARIADB_USER_PASSWORD: 0traClave
-      MARIADB_DATABASE: ciber
+
+  apacheb1:
+    build: ./apache
+    container_name: apachen1
+    ports:
+      - "6001:80"
+    depends_on:
+      - pythonb1
+    restart: unless-stopped
+
+  pythonb1:
+    build: .
+    container_name: pythonb1
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  mariadbb1:
+    image: mariadb:11
+    container_name: mariadbb1
+    env_file:
+      - .env
     volumes:
-      - mariadb_data:/var/lib/mysql
-      - ./api/db/rutinas.sql://docker-entrypoint-initdb.d/rutinas.sql:ro
-    user: mysql
-  phpmyadmin:
-    image: phpmyadmin
-    container_name: phpmyadmin
-    restart: always
-    environment:
-      - PMA_HOST=mariadb
+      - mariadb-datab1:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  phpmyadminb1:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadminb1
     ports:
-      - 9093:80
-    depends_on:
-      - mariadb
-  python:
-    build: ./api
-    container_name: python
+      - "7001:80"
     environment:
-      DB_USERNAME: root
-      DB_PASSWORD: example
-      DB_DATABASE: ciber
-      DB_HOST: mariadb
-      DB_PORT: 3306
-      PORT: 8080
-      HOST: 0.0.0.0
+      PMA_HOST: mariadbb1
     depends_on:
-      - mariadb
-  apache-waf:
-    build: ./apache #./waf/ en un futuro
-    ports:
-      - 9090:80
-    depends_on:
-      - python
-    links:
-      - python
+      - mariadbb1
+    restart: unless-stopped
+
 volumes:
-  mariadb_data:
+  mariadb-datab1:
