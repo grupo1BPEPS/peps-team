@@ -65,3 +65,7 @@ def logout():
         return jsonify({"status": "Sesión cerrada correctamente"}), 200
     else:
         return jsonify({"status": "Error al cerrar sesión"}), 500
+    
+@bp.route('/check', methods=['GET'])
+def check():
+    return ("", 200) if 'id_usuario' in session else ("", 401)

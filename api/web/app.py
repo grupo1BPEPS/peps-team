@@ -1,7 +1,8 @@
-from flask import Flask, render_template, jsonify 
+from flask import Flask, render_template, jsonify, redirect
 from datetime import timedelta
 from flask_cors import CORS
 import os
+from controlador_comentarios import comentarios_bp
 
 def create_app():
     app = Flask(__name__, template_folder='templates')
@@ -12,17 +13,32 @@ def create_app():
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     
+    ### Carpeta de subidas ###
+    UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+    
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+    ### Index ###
+
     @app.route('/')
     def index():
         return render_template('index.html')
-
     # --- BLUEPRINTS ---
     try:
         from rutas_auth import bp as auth_bp
         app.register_blueprint(auth_bp)
-        
+            
         from rutas_rutinas import bp as rutinas_bp
         app.register_blueprint(rutinas_bp)
+
+        from rutas_ficheros import bp as ficheros_bp
+        app.register_blueprint(ficheros_bp)
+
+        from controlador_comentarios import comentarios_bp
+        app.register_blueprint(comentarios_bp)
+
     except ImportError as e:
         print(f"Error importando rutas: {e}")
 

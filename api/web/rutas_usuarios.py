@@ -1,6 +1,5 @@
 from __future__ import print_function
 from flask import request,Blueprint, jsonify, session
-from funciones_auxiliares import Encoder
 import controlador_usuarios
 
 bp = Blueprint('usuarios', __name__)
@@ -33,7 +32,7 @@ def registro():
         username = login_json['username']
         password = login_json['password']
         profile = login_json['profile']
-        respuesta,code= controlador_usuarios.alta_usuario(username,password,profile)
+        respuesta,code= controlador_usuarios.registrar_usuario(username,password,profile)
     else:
         respuesta={"status":"Bad request"}
         code=401
