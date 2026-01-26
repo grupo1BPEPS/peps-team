@@ -18,11 +18,13 @@ def create_app():
     from rutas_rutinas import bp as rutinas_bp
     from rutas_ficheros import bp as ficheros_bp
     from controlador_comentarios import comentarios_bp
+    from rutas_usuarios import bp as usuarios_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(rutinas_bp, url_prefix="/api/rutinas")
     app.register_blueprint(ficheros_bp, url_prefix="/api/ficheros")
     app.register_blueprint(comentarios_bp, url_prefix="/api/comentarios")
+    app.register_blueprint(usuarios_bp, url_prefix="/api/usuarios")
 
     return app
 

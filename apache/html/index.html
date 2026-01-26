@@ -15,6 +15,7 @@
             color: white;
             padding: 15px;
             text-align: center;
+            position: relative;
         }
         main {
             max-width: 800px;
@@ -53,6 +54,27 @@
             background: #f9fafb;
             padding: 15px;
             border: 1px solid #ddd;
+        }
+        .btn-perfil {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 4px;
+
+            font-size: 14px;
+            cursor: pointer;
+
+            z-index: 1000;
+            display: none;
+        }
+
+        .btn-perfil:hover {
+            background-color: #1e40af;
         }
     </style>
 </head>
@@ -111,10 +133,15 @@
      <button onclick="irGaleria()" class="btn-gallery">Mis Archivos / Galería</button>
     <button onclick="verMisRutinas()">Mis rutinas</button>
     <button onclick="logout()">Cerrar sesión</button>
+    <button class="btn-perfil hidden" onclick="irPerfil()">
+    Mi perfil
+    </button>
 
     <div id="listado-rutinas" class="rutina"></div>
     
 </section>
+
+
 
 <!-- MOSTRAR RUTINA -->
 <section id="mostrar-rutina-section" class="hidden">
@@ -228,6 +255,8 @@ function logout() {
         document.getElementById("listado-mis-rutinas").innerHTML = "";
         document.getElementById("tabla_rutina").innerHTML = "";
         showSection("login-section");
+        const btnPerfil = document.querySelector(".btn-perfil");
+        if (btnPerfil) btnPerfil.classList.add("hidden");
     });
 }
 
@@ -428,15 +457,22 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(r => {
             if (r.ok) {
                 showSection("generar-rutina-section");
+                const btnPerfil = document.querySelector(".btn-perfil");
+                if (btnPerfil) btnPerfil.style.remove("hidden");
+
             } else {
                 showSection("login-section");
-            }
+            } 
         });
     });
 
-    function irHome() {
+function irHome() {
     window.location.href = "/";
 }
+function irPerfil() {
+    window.location.href = "/miperfil.html";
+}
+
 </script>
 
 </body>
