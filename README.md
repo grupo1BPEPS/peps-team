@@ -49,16 +49,16 @@ Usar cuando al hacer cambios nos de el error KeyError: 'ContainerConfig'.
 Este error es un bug que ocurre en docker con los metadatos de los contenedores
 cuando se modifican volumenes y servicios.
 
-sudo docker-compose down --remove-orphans
-sudo docker volume prune -f
-sudo docker container prune -f
-sudo docker image prune -f
-sudo docker system prune -a --volumes
+- sudo docker-compose down --remove-orphans
+- sudo docker volume prune -f
+- sudo docker container prune -f
+- sudo docker image prune -f
+- sudo docker system prune -a --volumes
 Luego volver a levantar con:
 - sudo docker compose build
-- sudo docker-compose up 
+- sudo docker compose up 
 
 ### Actualización de un solo contenedor
-sudo docker-compose stop apacheb1
-sudo docker-compose rm -f apacheb1
-sudo docker-compose up -d apacheb1
+- sudo docker compose stop apacheb1
+- sudo docker compose rm -f apacheb1
+- sudo docker compose up -d apacheb1
