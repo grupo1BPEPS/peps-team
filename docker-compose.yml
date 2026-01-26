@@ -4,18 +4,19 @@ services:
 
   apacheb1:
     build: ./apache
-    container_name: apachen1
+    container_name: apacheb1
     ports:
-      - "6001:80"
+      - "6101:80"
     depends_on:
       - pythonb1
-    restart: unless-stopped
 
   pythonb1:
     build: .
     container_name: pythonb1
     env_file:
       - .env
+    depends_on:
+      - mariadbb1
     restart: unless-stopped
 
   mariadbb1:
@@ -25,19 +26,25 @@ services:
       - .env
     volumes:
       - mariadb-datab1:/var/lib/mysql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./01-rutinas.sql:/docker-entrypoint-initdb.d/01-rutinas.sql:ro
     restart: unless-stopped
+
+
 
   phpmyadminb1:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadminb1
     ports:
-      - "7001:80"
+      - "7101:80"
     environment:
       PMA_HOST: mariadbb1
+      PMA_PORT: 3306
+      PMA_USER: appuser
+      PMA_PASSWORD: AppPassword123!
     depends_on:
       - mariadbb1
     restart: unless-stopped
+
 
 volumes:
   mariadb-datab1:

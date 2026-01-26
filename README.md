@@ -25,7 +25,7 @@ Python 3
 Flask
 MariaDB
 Werkzeug (hash de contraseñas)
-MySQL Connector / SQLAlchemy
+pymysql
 HTML + CSS (frontend básico)
 Git & GitHub
 

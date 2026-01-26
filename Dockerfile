@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY api/web/ .
 
-RUN mkdir -p uploads
+RUN mkdir -p /app/uploads
 
 EXPOSE 5000
 

@@ -4,9 +4,9 @@ USE gym_app;
 CREATE USER IF NOT EXISTS 'appuser'@'%' IDENTIFIED BY 'AppPassword123!';
 GRANT ALL PRIVILEGES ON gym_app.* TO 'appuser'@'%';
 FLUSH PRIVILEGES;
-CREATE USER IF NOT EXISTS 'alumno'@'%' IDENTIFIED BY 'alumno';
-GRANT ALL PRIVILEGES ON peps_team.* TO 'alumno'@'localhost';
-FLUSH PRIVILEGES;
+-- CREATE USER IF NOT EXISTS 'alumno'@'%' IDENTIFIED BY 'alumno';
+-- GRANT ALL PRIVILEGES ON peps_team.* TO 'alumno'@'localhost';
+-- FLUSH PRIVILEGES;
 
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,

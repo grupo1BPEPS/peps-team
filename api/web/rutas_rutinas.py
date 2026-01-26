@@ -1,13 +1,13 @@
 from flask import Blueprint, jsonify, request, session
 import controlador_rutinas
 
-bp = Blueprint('rutinas', __name__, url_prefix='/api')
+bp = Blueprint('rutinas', __name__, url_prefix='/api/rutinas')
 
 
 # =========================
 # CATÁLOGO DE RUTINAS BASE
 # =========================
-@bp.route("/rutinas/base", methods=["GET"])
+@bp.route("/base", methods=["GET"])
 def listar_rutinas_base():
     objetivo = request.args.get("objetivo")
     nivel = request.args.get("nivel")
@@ -26,7 +26,7 @@ def listar_rutinas_base():
 # =========================
 # RUTINAS DEL USUARIO
 # =========================
-@bp.route("/rutinas/usuario", methods=["GET"])
+@bp.route("/usuario", methods=["GET"])
 def listar_rutinas_usuario():
     usuario_id = session.get("id_usuario")
     if not usuario_id:
@@ -36,7 +36,7 @@ def listar_rutinas_usuario():
     return jsonify(rutinas), 200
 
 
-@bp.route("/rutinas/usuario", methods=["POST"])
+@bp.route("/usuario", methods=["POST"])
 def guardar_rutina_usuario():
     usuario_id = session.get("id_usuario")
     if not usuario_id:
