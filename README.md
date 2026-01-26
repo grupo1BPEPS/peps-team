@@ -62,3 +62,6 @@ Luego volver a levantar con:
 sudo docker-compose stop apacheb1
 sudo docker-compose rm -f apacheb1
 sudo docker-compose up -d apacheb1
+
+Comando permisos profe 
+  - chmod -R a+rx *
