@@ -39,8 +39,6 @@ services:
     environment:
       PMA_HOST: mariadbb1
       PMA_PORT: 3306
-      PMA_USER: appuser
-      PMA_PASSWORD: AppPassword123!
     depends_on:
       - mariadbb1
     restart: unless-stopped
