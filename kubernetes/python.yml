@@ -15,11 +15,11 @@ spec:
     spec:
       containers:
         - name: python
-          image: sirjousis/pepspython1.0
+          image: sirjousis/pepspython:1.0
           ports:
             - containerPort: 8080
           env:
-            - name: DB_USERNAME
+            - name: DB_USER
               valueFrom:
                 secretKeyRef:
                   name: grupob1-secret
@@ -27,15 +27,15 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: secrets
+                  name: grupob1-secret
                   key: DB_PASSWORD
-            - name: DB_DATABASE
+            - name: DB_NAME
               valueFrom:
                 secretKeyRef:
                   name: grupob1-secret
                   key: DB_DATABASE
             - name: DB_HOST
-              value: mariadb
+              value: mariadbb1
             - name: DB_PORT
               value: "3306"
             - name: PORT
