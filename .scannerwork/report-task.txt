@@ -1,0 +1,6 @@
+projectKey=Peps-Team
+serverUrl=http://localhost:9000
+serverVersion=26.1.0.118079
+dashboardUrl=http://localhost:9000/dashboard?id=Peps-Team
+ceTaskId=4fcc24b6-c4d3-4a3b-a7af-cc8f0822c88d
+ceTaskUrl=http://localhost:9000/api/ce/task?id=4fcc24b6-c4d3-4a3b-a7af-cc8f0822c88d
