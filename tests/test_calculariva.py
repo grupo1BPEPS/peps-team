@@ -1,4 +1,4 @@
-from calculariva import calculariva
+from api.web.calculariva import calculariva
 
 def test_calculariva():
     calculariva(100)
