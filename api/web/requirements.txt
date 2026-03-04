@@ -5,3 +5,5 @@ Werkzeug #hashing de las contraseñas en la bbdd
 pymysql
 jsonify
 uuid
+selenium
+time
