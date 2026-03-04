@@ -1,22 +1,24 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 import time
 
 URL = "http://10.227.87.81:6101"
 
 options = Options()
-options.add_argument("--headless")
+options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 
-driver = webdriver.Chrome(options=options)
+service = Service("/usr/bin/chromedriver")
+
+driver = webdriver.Chrome(service=service, options=options)
 
 try:
 
     driver.get(URL)
 
-    # --- REGISTER ---
     driver.find_element(By.XPATH, "//button[contains(text(),'Crear cuenta')]").click()
 
     driver.find_element(By.ID, "username_register").send_keys("testuser")
@@ -26,7 +28,6 @@ try:
 
     time.sleep(1)
 
-    # --- LOGIN ---
     driver.find_element(By.ID, "username").send_keys("testuser")
     driver.find_element(By.ID, "password").send_keys("testpass")
 
@@ -34,7 +35,6 @@ try:
 
     time.sleep(2)
 
-    # --- BUSCAR RUTINA ---
     driver.find_element(By.ID, "dias").send_keys("3")
 
     driver.find_element(By.XPATH, "//button[contains(text(),'Buscar rutinas')]").click()
