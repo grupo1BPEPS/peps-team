@@ -46,21 +46,21 @@ try:
     driver.find_element(By.ID, "password").send_keys("testpass")
 
     driver.find_element(
-        By.XPATH, "//button[contains(text(),'Entrar')]"
+    By.XPATH, "//button[contains(text(),'Entrar')]"
     ).click()
 
-    wait.until(
-        EC.presence_of_element_located((By.ID, "dias"))
-    ).send_keys("3")
+    dias = wait.until(
+        EC.visibility_of_element_located((By.ID, "dias"))
+    )
+
+    driver.execute_script("arguments[0].scrollIntoView(true);", dias)
+
+    dias.clear()
+    dias.send_keys("3")
 
     driver.find_element(
         By.XPATH, "//button[contains(text(),'Buscar rutinas')]"
     ).click()
-
-    wait.until(
-        EC.presence_of_element_located((By.TAG_NAME, "body"))
-    )
-
     print("E2E TEST PASSED")
 
 finally:
