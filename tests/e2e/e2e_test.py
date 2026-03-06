@@ -28,9 +28,10 @@ try:
         EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Crear cuenta')]"))
     ).click()
 
-    wait.until(
-        EC.presence_of_element_located((By.ID, "username_register"))
-    ).send_keys("testuser")
+    username = wait.until(
+    EC.element_to_be_clickable((By.ID, "username_register"))
+    )
+    username.send_keys("testuser")
 
     driver.find_element(By.ID, "password_register").send_keys("testpass")
 
@@ -39,7 +40,7 @@ try:
     ).click()
 
     wait.until(
-        EC.presence_of_element_located((By.ID, "username"))
+        EC.element_to_be_clickable((By.ID, "username"))
     ).send_keys("testuser")
 
     driver.find_element(By.ID, "password").send_keys("testpass")
