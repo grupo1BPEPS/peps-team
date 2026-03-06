@@ -1,9 +1,7 @@
-Flask # la API REST
-flask-cors # llamadas desde frontend o usado postman
-python-dotenv # declaracion de variables de entorno y acceso a ellas
-Werkzeug #hashing de las contraseñas en la bbdd
+Flask
+flask-cors
+python-dotenv
+Werkzeug
 pymysql
 jsonify
-uuid
 selenium
-time
