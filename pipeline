@@ -276,18 +276,20 @@ pipeline {
                 cd nikto
 
                 docker build -t nikto .
-
+                mkdir -p reports
                 docker run --rm \
-                    -v $(pwd):/reports \
+                    -u 0 \
+                    -v $(pwd)/reports:/reports \
                     nikto \
-                    -h http://10.227.87.80:30701 \
-                    -o /reports/
+                    -h http://10.227.87.81:6101/ \
+                    -Format json \
+                    -output /reports/nikto_report.json
                 '''
             }
 
             post {
                 always {
-                    archiveArtifacts artifacts: '/reports'
+                    archiveArtifacts artifacts: 'nikto/reports/*'
                 }
             }
         }
