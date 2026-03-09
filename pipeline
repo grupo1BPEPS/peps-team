@@ -268,31 +268,25 @@ pipeline {
 
         stage('DAST - Nikto Scan') {
 
-            steps {
+    steps {
+        sh '''
+        docker run --rm \
+            -u 0 \
+            -v $(pwd)/reports:/reports \
+            sullo/nikto \
+            -h http://10.227.87.81:6101/ \
+            -Display V \
+            -Format json \
+            -output /reports/nikto_report
+        '''
+    }
 
-                sh '''
-                git clone https://github.com/sullo/nikto.git || true
-
-                cd nikto
-
-                docker build -t nikto .
-                mkdir -p reports
-                docker run --rm \
-                    -u 0 \
-                    -v $(pwd)/reports:/reports \
-                    nikto \
-                    -h http://10.227.87.81:6101/ \
-                    -Format json \
-                    -output /reports/nikto_report.json
-                '''
-            }
-
-            post {
-                always {
-                    archiveArtifacts artifacts: 'nikto/reports/*'
-                }
-            }
+    post {
+        always {
+            archiveArtifacts artifacts: 'reports/*'
         }
+    }
+}
 
         stage('Cleanup') {
 
