@@ -238,6 +238,17 @@ pipeline {
                 }
             }
         }
+        stage('Levantar app en docker') {
+
+            steps {
+                sh '''
+                docker-compose up -d
+                sleep 20
+                docker ps -a
+                sleep 5
+                '''
+            }
+        }
 
         stage('E2E Test') {
 
@@ -291,7 +302,10 @@ pipeline {
         stage('Cleanup') {
 
             steps {
-                sh 'docker logout || true'
+                sh '''
+                docker-compose down
+                docker logout || true
+                '''
             }
         }
     }
