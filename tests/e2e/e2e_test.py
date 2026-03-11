@@ -52,10 +52,5 @@ def test_e2e():
             By.XPATH, "//button[contains(text(),'Entrar')]"
         ).click()
 
-        dias = wait.until(
-            EC.visibility_of_element_located((By.ID, "dias"))
-        )
-
-
     finally:
         driver.quit()

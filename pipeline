@@ -189,30 +189,30 @@ pipeline {
             }
         }
 
-        stage('Build Docker Python') {
+       // stage('Build Docker Python') {
 
-            when { expression { params.IMAGE_TAG_PYTHON?.trim() } }
+        //    when { expression { params.IMAGE_TAG_PYTHON?.trim() } }
 
-            steps {
-                script {
-                    dockerImagePython = docker.build(
-                        "${DOCKER_IMAGE_PYTHON}:${FINAL_IMAGE_TAG_PYTHON}",
-                        "-f Dockerfile ."
-                    )
-                }
-            }
-        }
+        //    steps {
+        //        script {
+        //            dockerImagePython = docker.build(
+        //                "${DOCKER_IMAGE_PYTHON}:${FINAL_IMAGE_TAG_PYTHON}",
+        //                "-f Dockerfile ."
+        //            )
+        //        }
+        //    }
+        //}
 
-        stage('Push Docker Python') {
+        //stage('Push Docker Python') {
 
-            when { expression { params.IMAGE_TAG_PYTHON?.trim() } }
+        //    when { expression { params.IMAGE_TAG_PYTHON?.trim() } }
 
-            steps {
-                script {
-                    dockerImagePython.push()
-                }
-            }
-        }
+        //    steps {
+        //        script {
+        //            dockerImagePython.push()
+        //        }
+        //    }
+        //}
 
         stage('Build Docker WAF') {
 
@@ -238,17 +238,17 @@ pipeline {
                 }
             }
         }
-        stage('Levantar app en docker') {
-
-            steps {
-                sh '''
-                docker-compose up -d
-                sleep 20
-                docker ps -a
-                sleep 5
-                '''
-            }
+        stage('Levantar con Secretos') {
+    steps {
+        withCredentials([file(credentialsId: 'archivo-env-casa', variable: 'ENV_FILE')]) {
+            sh '''
+                cp \$ENV_FILE .env
+                docker compose down
+                docker compose up -d --build
+            '''
         }
+    }
+}
 
         stage('E2E Test') {
 
@@ -303,7 +303,7 @@ pipeline {
 
             steps {
                 sh '''
-                docker-compose down
+                docker compose down
                 docker logout || true
                 '''
             }
