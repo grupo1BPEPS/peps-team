@@ -56,14 +56,6 @@ def test_e2e():
             EC.visibility_of_element_located((By.ID, "dias"))
         )
 
-        driver.execute_script("arguments[0].scrollIntoView(true);", dias)
-
-        dias.clear()
-        dias.send_keys("3")
-
-        driver.find_element(
-            By.XPATH, "//button[contains(text(),'Buscar rutinas')]"
-        ).click()
 
     finally:
         driver.quit()

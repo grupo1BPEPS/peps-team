@@ -1,9 +1,9 @@
 # bd.py
 import os
 import pymysql
-from dotenv import load_dotenv
+##from dotenv import load_dotenv
 
-load_dotenv()
+##load_dotenv()
 
 def obtener_conexion():
     return pymysql.connect(
