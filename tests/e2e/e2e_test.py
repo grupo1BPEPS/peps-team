@@ -9,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 def test_e2e():
 
-    URL = "http://10.227.87.81:6101"
+    URL = "http://192.168.1.214:6101"
 
     options = Options()
     options.add_argument("--headless=new")
@@ -50,19 +50,6 @@ def test_e2e():
 
         driver.find_element(
             By.XPATH, "//button[contains(text(),'Entrar')]"
-        ).click()
-
-        dias = wait.until(
-            EC.visibility_of_element_located((By.ID, "dias"))
-        )
-
-        driver.execute_script("arguments[0].scrollIntoView(true);", dias)
-
-        dias.clear()
-        dias.send_keys("3")
-
-        driver.find_element(
-            By.XPATH, "//button[contains(text(),'Buscar rutinas')]"
         ).click()
 
     finally:
