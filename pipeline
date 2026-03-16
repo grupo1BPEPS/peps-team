@@ -13,8 +13,14 @@ pipeline {
         FINAL_IMAGE_TAG_WAF    = "${params.IMAGE_TAG_WAF}"
         PYTHON_IMAGE = "python:3.11-slim"
     }
-
     stages {
+        stage('Build Python Image') {
+            steps {
+                sh '''
+                docker build -t $DOCKER_IMAGE_PYTHON:$FINAL_IMAGE_TAG_PYTHON .
+                docker run -p 5000:5000 sirjousis/peps:2                '''
+            }
+        }
 
         stage('Checkout') {
             steps {
