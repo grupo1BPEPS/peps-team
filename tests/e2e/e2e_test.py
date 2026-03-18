@@ -9,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 def test_e2e():
 
-    URL = "http://192.168.1.214:6101"
+    URL = "http://localhost:5000"
 
     options = Options()
     options.add_argument("--headless=new")
