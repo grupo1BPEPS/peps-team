@@ -2,17 +2,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-driver = webdriver.Chrome(
-    service=Service("/usr/bin/chromedriver"),
-    options=options
-)
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-
 
 def test_e2e():
-
     URL = "http://peps-web:80"
 
     options = Options()
@@ -21,14 +14,13 @@ def test_e2e():
     options.add_argument("--disable-dev-shm-usage")
 
     driver = webdriver.Chrome(
-        service=Service(ChromeDriverManager().install()),
+        service=Service('/usr/bin/chromedriver'),
         options=options
     )
 
     wait = WebDriverWait(driver, 10)
 
     try:
-
         driver.get(URL)
 
         wait.until(
@@ -41,7 +33,6 @@ def test_e2e():
         username.send_keys("testuser")
 
         driver.find_element(By.ID, "password_register").send_keys("testpass")
-
         driver.find_element(
             By.XPATH, "//button[contains(text(),'Registrarse')]"
         ).click()
@@ -51,7 +42,6 @@ def test_e2e():
         ).send_keys("testuser")
 
         driver.find_element(By.ID, "password").send_keys("testpass")
-
         driver.find_element(
             By.XPATH, "//button[contains(text(),'Entrar')]"
         ).click()

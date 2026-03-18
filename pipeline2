@@ -249,28 +249,47 @@ pipeline {
 
         stage('E2E Test') {
 
-            agent {
-                docker {
-                    image 'selenium/standalone-chrome:latest'
-                    reuseNode true
-                }
-            }
+    when { expression { params.IMAGE_TAG_PYTHON?.trim() } }
 
-            steps {
-                sh '''
-                pip install pytest selenium webdriver-manager
+    agent {
 
-                pytest tests/e2e \
-                    --junitxml=e2e_results.xml
-                '''
-            }
+        docker {
 
-            post {
-                always {
-                    junit 'e2e_results.xml'
-                }
-            }
+            image 'selenium/standalone-chrome:latest'
+
+            args '--network peps-net'
+
+            reuseNode true
+
         }
+
+    }
+
+    steps {
+
+        sh '''
+
+            pip install pytest selenium
+
+            pytest tests/e2e \
+
+              --junitxml=e2e_results.xml
+
+        '''
+
+    }
+
+    post {
+
+        always {
+
+            junit 'e2e_results.xml'
+
+        }
+
+    }
+
+}
 
         stage('DAST - Nikto Scan') {
 
