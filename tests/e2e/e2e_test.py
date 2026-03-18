@@ -2,6 +2,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+driver = webdriver.Chrome(
+    service=Service("/usr/bin/chromedriver"),
+    options=options
+)
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
@@ -9,7 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 def test_e2e():
 
-    URL = "http://localhost:8080"
+    URL = "http://peps-web:80"
 
     options = Options()
     options.add_argument("--headless=new")
