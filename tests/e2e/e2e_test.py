@@ -13,7 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 def test_e2e():
 
-    URL = "http://localhost:8080"
+    URL = "http://peps-web:80"
 
     options = Options()
     options.add_argument("--headless=new")
