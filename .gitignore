@@ -5,3 +5,7 @@ __pycache__/
 uploads/
 peps/
 .dockerignore
+.env
+.git/
+.scannerwork/
+

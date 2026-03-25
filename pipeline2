@@ -286,7 +286,7 @@ pipeline {
                 docker run --rm \
                     -v $(pwd)/reports:/reports \
                     sullo/nikto \
-                    -h http://localhost:5000 \
+                    -h http://peps-web:80 \
                     -Display V \
                     -Format json \
                     -output /reports/
