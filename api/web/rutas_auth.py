@@ -1,20 +1,25 @@
 from flask import Blueprint, request, jsonify, session
 import controlador_usuarios
+import re
 
 # Definimos el blueprint con el nombre 'bp' como espera tu app.py
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 
-# 1. REGISTRO DE USUARIOS
+
+
 @bp.route('/registro', methods=['POST'])
 def registro():
-    datos = request.get_json()
+    datos = request.get_json() or {}
 
     username = datos.get('username')
     password = datos.get('password')
 
     if not username or not password:
         return jsonify({"error": "Faltan datos"}), 400
+
+    if not re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!_@.]).{8,}$', password):
+        return jsonify({"error": "Contraseña no cumple los requisitos de seguridad"}), 400
 
     try:
         controlador_usuarios.registrar_usuario(username, password)
@@ -23,22 +28,25 @@ def registro():
         return jsonify({"error": "El usuario ya existe"}), 409
 
 
-# 2. LOGIN
 @bp.route("/login", methods=["POST"])
 def login():
-    if request.headers.get("Content-Type") != "application/json":
+    if not request.is_json:
         return jsonify({"error": "Bad request"}), 400
 
-    data = request.json
+    data = request.get_json() or {}
+
     username = data.get("username")
     password = data.get("password")
-    session.clear()
+
+    if not username or not password:
+        return jsonify({"error": "Faltan credenciales"}), 400
+
     usuario = controlador_usuarios.validar_login(username, password)
 
     if not usuario:
         return jsonify({"error": "Credenciales inválidas"}), 401
 
-    
+    session.clear()
     session.permanent = True
     session["id_usuario"] = usuario["id"]
     session["username"] = usuario["username"]
