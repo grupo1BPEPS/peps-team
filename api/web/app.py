@@ -13,6 +13,7 @@ limiter = Limiter(get_remote_address, default_limits=[])
 def create_app():
     app = Flask(__name__)
     CORS(app, supports_credentials=True)
+    limiter.init_app(app)
 
     app.config['SECRET_KEY'] = os.getenv("gym_secret_key")
     app.permanent_session_lifetime = timedelta(hours=1)
