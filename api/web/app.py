@@ -2,6 +2,13 @@ from flask import Flask
 from flask_cors import CORS
 from datetime import timedelta
 import os
+# app.py
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+
+limiter = Limiter(get_remote_address, default_limits=[])
+
 
 def create_app():
     app = Flask(__name__)

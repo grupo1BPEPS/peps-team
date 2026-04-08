@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, session
 import controlador_usuarios
 import re
+from app import limiter
 
 # Definimos el blueprint con el nombre 'bp' como espera tu app.py
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
@@ -43,6 +44,7 @@ def registro():
 
 
 @bp.route("/login", methods=["POST"])
+@limiter.limit("5 per minute")
 def login():
     if not request.is_json:
         return jsonify({"error": "Bad request"}), 400
@@ -55,10 +57,12 @@ def login():
     if not username or not password:
         return jsonify({"error": "Faltan credenciales"}), 400
     # validar que tiene username
-    if not re.match(r'^[a-zA-Z0-9_]{4,12}+$', username):
+    if not re.match(r'^[a-zA-Z0-9_]{4,12}$', username):
         return jsonify({"error": "Credenciales inválidas"}), 400
     
     usuario = controlador_usuarios.validar_login(username, password)
+    if not usuario:
+        return jsonify({"error": "Credenciales inválidas"}), 401
 
     session.clear()
     session.permanent = True
