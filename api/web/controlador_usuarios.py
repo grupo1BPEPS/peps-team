@@ -1,35 +1,48 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from bd import obtener_conexion
+from datetime import datetime
 
 def validar_login(username, password):
     conn = obtener_conexion()
     try:
         with conn.cursor() as cursor:
-            # 1. Obtener usuario
             cursor.execute(
-                "SELECT id, username, password FROM usuarios WHERE username = %s",
+                "SELECT id, username, password, failed_attempts, locked_until FROM usuarios WHERE username = %s",
                 (username,)
             )
             usuario = cursor.fetchone()
 
-            # 2. Validar credenciales
             if not usuario:
                 return None
 
+            # Comprobar si la cuenta está bloqueada
+            if usuario["locked_until"] and usuario["locked_until"] > datetime.now():
+                return "locked"
+
+            # Contraseña incorrecta
             if not check_password_hash(usuario["password"], password):
+                nuevos_intentos = usuario["failed_attempts"] + 1
+                if nuevos_intentos >= 5:
+                    # Bloquear 15 minutos
+                    cursor.execute(
+                        "UPDATE usuarios SET failed_attempts = %s, locked_until = DATE_ADD(NOW(), INTERVAL 15 MINUTE) WHERE id = %s",
+                        (nuevos_intentos, usuario["id"])
+                    )
+                else:
+                    cursor.execute(
+                        "UPDATE usuarios SET failed_attempts = %s WHERE id = %s",
+                        (nuevos_intentos, usuario["id"])
+                    )
+                conn.commit()
                 return None
 
-            ## login correcto, marcar estado activo
+            # Login correcto: resetear contador
             cursor.execute(
-                "UPDATE usuarios SET is_active = 1 WHERE id = %s",
+                "UPDATE usuarios SET is_active = 1, failed_attempts = 0, locked_until = NULL WHERE id = %s",
                 (usuario["id"],)
             )
             conn.commit()
-            ## coger info
-            return {
-                "id": usuario["id"],
-                "username": usuario["username"]
-            }
+            return {"id": usuario["id"], "username": usuario["username"]}
 
     except Exception:
         conn.rollback()

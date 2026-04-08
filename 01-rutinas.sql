@@ -12,7 +12,9 @@ CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    is_active TINYINT(1) NOT NULL DEFAULT 0
+    is_active TINYINT(1) NOT NULL DEFAULT 0,
+    failed_attempts INT DEFAULT 0,
+    locked_until DATETIME NULL
 );
 
 -- hardcodeadas

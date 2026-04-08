@@ -61,6 +61,9 @@ def login():
         return jsonify({"error": "Credenciales inválidas"}), 400
     
     usuario = controlador_usuarios.validar_login(username, password)
+    if usuario == "locked":
+        return jsonify({"error": "Cuenta bloqueada temporalmente, intenta en 15 minutos"}), 429
+
     if not usuario:
         return jsonify({"error": "Credenciales inválidas"}), 401
 
