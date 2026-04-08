@@ -2,11 +2,12 @@ from flask import Flask
 from flask_cors import CORS
 from datetime import timedelta
 import os
+
 def create_app():
     app = Flask(__name__)
     CORS(app, supports_credentials=True)
 
-    app.config['SECRET_KEY'] = 'gym_secret'
+    app.config['SECRET_KEY'] = os.getenv("gym_secret_key")
     app.permanent_session_lifetime = timedelta(hours=1)
 
     UPLOAD_FOLDER = "/app/uploads"

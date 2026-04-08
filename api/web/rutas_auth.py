@@ -10,17 +10,31 @@ bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 @bp.route('/registro', methods=['POST'])
 def registro():
+    
+    if not request.is_json:
+        return jsonify({"error": "Bad request"}), 400
+    
     datos = request.get_json() or {}
-
     username = datos.get('username')
     password = datos.get('password')
 
+    #validar que campos estén llenos
+
     if not username or not password:
         return jsonify({"error": "Faltan datos"}), 400
+    
+    ## VALIDAR usuario
+    if len(username) < 4 or len(username) > 12:
+        return jsonify({"error": "Longitud de username inválida"}), 400
+    if not re.match(r'^[a-zA-Z0-9_]+$', username):
+        return jsonify({"error": "Carácteres no válidos en el username"}), 400
+    
+    # VALIDAR contraseña
 
-    if not re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!_@.]).{8,}$', password):
+    if not re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!_@.]).{8,}$', password): #no contiene mayusc,minus,digito,especial y min 8 car -> error
         return jsonify({"error": "Contraseña no cumple los requisitos de seguridad"}), 400
 
+    
     try:
         controlador_usuarios.registrar_usuario(username, password)
         return jsonify({"mensaje": "Usuario registrado con éxito"}), 201
@@ -37,14 +51,14 @@ def login():
 
     username = data.get("username")
     password = data.get("password")
-
+    # validar que campos estén llenos
     if not username or not password:
         return jsonify({"error": "Faltan credenciales"}), 400
-
+    # validar que tiene username
+    if not re.match(r'^[a-zA-Z0-9_]{4,12}+$', username):
+        return jsonify({"error": "Credenciales inválidas"}), 400
+    
     usuario = controlador_usuarios.validar_login(username, password)
-
-    if not usuario:
-        return jsonify({"error": "Credenciales inválidas"}), 401
 
     session.clear()
     session.permanent = True
