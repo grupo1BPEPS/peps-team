@@ -6,3 +6,5 @@ pymysql
 jsonify
 selenium
 flask-limiter
+pyotp
+qrcode

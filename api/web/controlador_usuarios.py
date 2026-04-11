@@ -15,7 +15,7 @@ def validar_login(username, password):
             if not usuario:
                 return None
 
-            # Comprobar si la cuenta está bloqueada
+            # Comprobar si locked_until = NONE y si tiene algún valor comprueba que el bloqueosiga activo
             if usuario["locked_until"] and usuario["locked_until"] > datetime.now():
                 return "locked"
 
