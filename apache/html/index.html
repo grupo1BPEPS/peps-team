@@ -107,6 +107,23 @@
     <button onclick="register()">Registrarse</button>
     <button onclick="showLogin()">Volver</button>
 </section>
+<!-- QR OTP SETUP (tras registro) -->
+<section id="otp-setup-section" class="hidden">
+    <h2>Configura tu autenticador</h2>
+    <p>Escanea este QR con Google Authenticator o Authy:</p>
+    <img id="otp-qr-img" src="" alt="QR Code" style="display:block; margin:20px auto; max-width:250px;">
+    <p style="color:#555;">Una vez escaneado, ya puedes iniciar sesión normalmente.</p>
+    <button onclick="showLogin()">Ir al login</button>
+</section>
+
+<!-- OTP LOGIN (tras login con contraseña) -->
+<section id="otp-login-section" class="hidden">
+    <h2>Verificación en dos pasos</h2>
+    <p>Introduce el código de tu autenticador:</p>
+    <input type="text" id="otp-login-token" maxlength="6" placeholder="123456">
+    <button onclick="verificarOtpLogin()">Verificar</button>
+</section>
+
 
 <!-- BUSCAR RUTINAS -->
 <section id="generar-rutina-section" class="hidden">
@@ -228,7 +245,29 @@ function login() {
             password: document.getElementById("password").value
         })
     })
-    .then(r => r.ok ? showSection("generar-rutina-section") : alert("Error login"));
+    .then(r => r.json().then(data => ({ ok: r.ok, data })))
+    .then(({ ok, data }) => {
+        if (!ok) { alert(data.error || "Error al iniciar sesión"); return; }
+        if (data.status === "otp_required") {
+            showSection("otp-login-section");
+        } else {
+            showSection("generar-rutina-section");
+        }
+    });
+}
+
+function verificarOtpLogin() {
+    fetch("/api/auth/verify-otp", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: document.getElementById("otp-login-token").value })
+    })
+    .then(r => r.json().then(data => ({ ok: r.ok, data })))
+    .then(({ ok, data }) => {
+        if (!ok) { alert(data.error || "Código incorrecto"); return; }
+        showSection("generar-rutina-section");
+    });
 }
 
 function register() {
@@ -240,8 +279,14 @@ function register() {
             password: document.getElementById("password_register").value
         })
     })
-    .then(() => showSection("login-section"));
+    .then(r => r.json().then(data => ({ ok: r.ok, data })))
+    .then(({ ok, data }) => {
+        if (!ok) { alert(data.error || "Error en el registro"); return; }
+        document.getElementById("otp-qr-img").src = "data:image/png;base64," + data.qr;
+        showSection("otp-setup-section");
+    });
 }
+
 
 function logout() {
     fetch("/api/auth/logout", {
