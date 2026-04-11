@@ -15,6 +15,7 @@ CREATE TABLE usuarios (
     is_active TINYINT(1) NOT NULL DEFAULT 0,
     failed_attempts INT DEFAULT 0,
     locked_until DATETIME NULL
+    otp_secret VARCHAR(32) NULL,
 );
 
 -- hardcodeadas

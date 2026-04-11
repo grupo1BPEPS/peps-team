@@ -37,8 +37,12 @@ def registro():
 
     
     try:
-        controlador_usuarios.registrar_usuario(username, password)
-        return jsonify({"mensaje": "Usuario registrado con éxito"}), 201
+        resultado = controlador_usuarios.registrar_usuario(username, password)
+        session["pending_otp_setup_id"] = resultado["id"]
+        return jsonify({
+            "mensaje": "Usuario registrado. Escanea el QR con tu autenticador.",
+            "qr": resultado["qr"]
+        }), 201
     except Exception:
         return jsonify({"error": "El usuario ya existe"}), 409
 

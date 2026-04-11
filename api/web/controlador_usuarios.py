@@ -1,6 +1,8 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from bd import obtener_conexion
 from datetime import datetime
+from otpgen import gen_otp, verificar_otp
+import pyotp
 
 def validar_login(username, password):
     conn = obtener_conexion()
@@ -54,12 +56,16 @@ def registrar_usuario(username, password):
     conn = obtener_conexion()
     try:
         with conn.cursor() as cursor:
+            key = pyotp.random_base32()
             cursor.execute(
-                "INSERT INTO usuarios (username, password, is_active) VALUES (%s, %s, %s)",
-                (username, generate_password_hash(password), 1)
+                "INSERT INTO usuarios (username, password, is_active, otp_secret) VALUES (%s, %s, %s, %s)",
+                (username, generate_password_hash(password), 1, key)
             )
             conn.commit()
-            return True
+            user_id = cursor.lastrowid
+            qr_base64 = gen_otp(username, key)
+            return {"id": user_id, "username": username, "otp_qr": qr_base64}       
+            
     except Exception as e:
         conn.rollback()
         raise e
