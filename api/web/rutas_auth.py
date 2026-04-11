@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, session
 import controlador_usuarios
 import re
 from app import limiter
+from otpgen import verificar_otp
 
 # Definimos el blueprint con el nombre 'bp' como espera tu app.py
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
@@ -67,15 +68,45 @@ def login():
     usuario = controlador_usuarios.validar_login(username, password)
     if usuario == "locked":
         return jsonify({"error": "Cuenta bloqueada temporalmente, intenta en 15 minutos"}), 429
-
     if not usuario:
         return jsonify({"error": "Credenciales inválidas"}), 401
 
-    session.clear()
-    session.permanent = True
-    session["id_usuario"] = usuario["id"]
-    session["username"] = usuario["username"]
+    # Credenciales OK → guardar en sesión pendiente y pedir OTP
+    session["pending_otp_user_id"] = usuario["id"]
+    session["pending_otp_username"] = usuario["username"]
+    session["pending_otp_secret"] = usuario["otp_secret"]
+    return jsonify({"status": "otp_required"}), 200
 
+
+
+
+@bp.route("/verify-otp", methods=["POST"])
+def verify_otp():
+    if not request.is_json:
+        return jsonify({"error": "Bad request"}), 400
+
+    user_id = session.get("pending_otp_user_id")
+    username = session.get("pending_otp_username")
+    otp_secret = session.get("pending_otp_secret")
+
+    if not user_id or not otp_secret:
+        return jsonify({"error": "No hay autenticación OTP pendiente"}), 400
+
+    data = request.get_json() or {}
+    token = data.get("token", "")
+
+    if not re.match(r'^\d{6}$', token):
+        return jsonify({"error": "Token inválido"}), 400
+
+    if not verificar_otp(otp_secret, token):
+        return jsonify({"error": "Código OTP incorrecto"}), 401
+
+    session.pop("pending_otp_user_id", None)
+    session.pop("pending_otp_username", None)
+    session.pop("pending_otp_secret", None)
+    session.permanent = True
+    session["id_usuario"] = user_id
+    session["username"] = username
     return jsonify({"status": "ok"}), 200
 
 

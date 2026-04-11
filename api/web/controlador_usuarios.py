@@ -9,8 +9,7 @@ def validar_login(username, password):
     try:
         with conn.cursor() as cursor:
             cursor.execute(
-                "SELECT id, username, password, failed_attempts, locked_until FROM usuarios WHERE username = %s",
-                (username,)
+                "SELECT id, username, password, failed_attempts, locked_until, otp_secret FROM usuarios WHERE username = %s", (username,)
             )
             usuario = cursor.fetchone()
 
@@ -44,7 +43,7 @@ def validar_login(username, password):
                 (usuario["id"],)
             )
             conn.commit()
-            return {"id": usuario["id"], "username": usuario["username"]}
+            return {"id": usuario["id"], "username": usuario["username"], "otp_secret": usuario["otp_secret"]}
 
     except Exception:
         conn.rollback()
@@ -64,7 +63,7 @@ def registrar_usuario(username, password):
             conn.commit()
             user_id = cursor.lastrowid
             qr_base64 = gen_otp(username, key)
-            return {"id": user_id, "username": username, "otp_qr": qr_base64}       
+            return {"id": user_id, "username": username, "qr": qr_base64}       
             
     except Exception as e:
         conn.rollback()
