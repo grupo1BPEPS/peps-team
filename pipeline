@@ -4,7 +4,7 @@ pipeline {
     parameters {
         string(name: 'IMAGE_TAG_PYTHON', defaultValue: '', description: 'Tag imagen Docker python')
         string(name: 'IMAGE_TAG_WAF', defaultValue: '', description: 'Tag imagen Docker waf')
-    }
+    } //parametros que pide al ejecutar
 
     environment {
         DOCKER_IMAGE_PYTHON = "sirjousis/peps"
@@ -35,7 +35,7 @@ pipeline {
         docker {
             image "${PYTHON_IMAGE}"
             args '-u root'
-            reuseNode true
+            reuseNode true //correr en el mismo nodo de jenkins siempre
         }
     }
 
@@ -60,7 +60,7 @@ pipeline {
 
     post {
         always {
-            junit 'pytest_results.xml'
+            junit 'pytest_results.xml' //lee y publica los resultados de las pruebas enXML
         }
     }
 }
