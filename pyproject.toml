@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+[project]
+name = "dante"
+version = "0.1.0"
+description = "Dante — Agente de IA personal en terminal"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "anthropic>=0.25.0",
+    "openai>=1.30.0",
+    "google-generativeai>=0.7.0",
+    "rich>=13.7.0",
+    "prompt_toolkit>=3.0.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
+    "duckduckgo-search>=6.0.0",
+    "httpx>=0.27.0",
+]
+[project.scripts]
+dante = "dante.main:main"
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dante*"]
+[tool.setuptools.package-data]
+dante = ["../config/**/*.yaml", "../soul"]

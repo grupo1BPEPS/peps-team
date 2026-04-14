@@ -1,0 +1,26 @@
+# Configuración global de Dante
+default_provider: anthropic
+default_model: claude-sonnet-4-6
+default_profile: default
+# Directorio de perfiles (relativo al directorio del paquete instalado)
+profiles_dir: config/profiles
+# Patrones de comandos considerados peligrosos (requieren confirmación humana)
+danger_patterns:
+  - 'rm\s+-rf'
+  - 'rm\s+-r\s+/'
+  - '\bdd\b.*of='
+  - '\bmkfs\b'
+  - '>\s*/dev/sd'
+  - 'DROP\s+DATABASE'
+  - 'DROP\s+TABLE'
+  - 'TRUNCATE\s+TABLE'
+  - ':\(\)\s*\{.*\}.*:'   # fork bomb
+  - 'sudo\s+rm\s+-rf\s+/'
+  - 'chmod\s+-R\s+777\s+/'
+  - 'shutdown\b'
+  - 'reboot\b'
+  - 'halt\b'
+# Historial de comandos shell (se guarda en ~/.dante/history)
+shell_history_size: 500
+# Timeout para comandos shell (segundos)
+shell_timeout: 60
