@@ -9,5 +9,4 @@ flask-limiter
 pyotp
 qrcode
 pillow
-html
 bleach

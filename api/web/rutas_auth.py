@@ -3,7 +3,7 @@ import controlador_usuarios
 import re
 from app import limiter
 from otpgen import verificar_otp
-from api.web.funciones_auxiliares import sanitize_field
+from funciones_auxiliares import sanitize_field
 
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 

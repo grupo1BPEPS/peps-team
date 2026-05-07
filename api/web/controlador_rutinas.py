@@ -1,6 +1,6 @@
 import json
 from bd import obtener_conexion
-from .funciones_auxiliares import sanitize_field
+from funciones_auxiliares import sanitize_field
 
 # =========================
 # CATÁLOGO (rutinas base)
