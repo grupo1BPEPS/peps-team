@@ -1,5 +1,6 @@
 import json
 from bd import obtener_conexion
+from .funciones_auxiliares import sanitize_field
 
 # =========================
 # CATÁLOGO (rutinas base)
@@ -18,6 +19,7 @@ def obtener_rutinas_filtradas(objetivo, nivel, dias):
             )
             rutinas = cursor.fetchall()
             for r in rutinas:
+                r["nombre"] = sanitize_field(r["nombre"])
                 r["rutina_json"] = json.loads(r["rutina_json"])
 
             return rutinas
@@ -63,6 +65,7 @@ def obtener_rutinas_usuario(usuario_id):
             rutinas = cursor.fetchall()
 
             for r in rutinas:
+                r["nombre"] = sanitize_field(r["nombre"])
                 r["rutina_json"] = json.loads(r["rutina_json"])
 
             return rutinas

@@ -3,7 +3,10 @@ import os
 import hashlib
 from werkzeug.utils import secure_filename
 from bd import obtener_conexion
+from funciones_auxiliares import sanitize_field
 
+ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.pdf'}
+MAX_SIZE_BYTES = 5 * 1024 * 1024
 
 def guardar_archivo(file, upload_folder, user_id, rutina_usuario_id=None):
     try:
@@ -11,10 +14,18 @@ def guardar_archivo(file, upload_folder, user_id, rutina_usuario_id=None):
             return False, "Nombre de archivo vacío"
 
         nombre_original = secure_filename(file.filename)
-        extension = os.path.splitext(nombre_original)[1]
+        extension = os.path.splitext(nombre_original)[1].lower()
+
+        if extension not in ALLOWED_EXTENSIONS:
+            return False, "Tipo de archivo no permitido"
 
         contenido = file.read()
+        
+        if len(contenido) > MAX_SIZE_BYTES:
+            return False, "Archivo demasiado grande (máximo 5 MB)"
+        
         hash_md5 = hashlib.md5(contenido).hexdigest()
+        
         file.seek(0)
 
         nombre_guardado = f"{hash_md5}{extension}"
@@ -38,8 +49,8 @@ def guardar_archivo(file, upload_folder, user_id, rutina_usuario_id=None):
         conn.close()
 
         return True, {
-            "nombre_original": nombre_original,
-            "nombre_guardado": nombre_guardado
+            "nombre_original": sanitize_field(nombre_original),
+            "nombre_guardado": sanitize_field(nombre_guardado)
         }
 
     except Exception as e:
@@ -57,8 +68,7 @@ def obtener_ficheros_usuario(user_id):
     )
     data = cursor.fetchall()
     conn.close()
-    return data
-
+    return [sanitize_field(dict(f)) for f in data]
 
 def obtener_ficheros_rutina(rutina_usuario_id, user_id):
     conn = obtener_conexion()
@@ -73,7 +83,7 @@ def obtener_ficheros_rutina(rutina_usuario_id, user_id):
     )
     data = cursor.fetchall()
     conn.close()
-    return data
+    return [sanitize_field(dict(f)) for f in data]
 
 
 def archivo_pertenece_usuario(nombre_archivo, user_id):

@@ -3,8 +3,8 @@ import controlador_usuarios
 import re
 from app import limiter
 from otpgen import verificar_otp
+from api.web.funciones_auxiliares import sanitize_field
 
-# Definimos el blueprint con el nombre 'bp' como espera tu app.py
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 
@@ -16,7 +16,7 @@ def registro():
     if not request.is_json:
         return jsonify({"error": "Bad request"}), 400
     
-    datos = request.get_json() or {}
+    datos = request.cleaned_json
     username = datos.get('username')
     password = datos.get('password')
 
@@ -54,7 +54,7 @@ def login():
     if not request.is_json:
         return jsonify({"error": "Bad request"}), 400
 
-    data = request.get_json() or {}
+    data = request.cleaned_json
 
     username = data.get("username")
     password = data.get("password")
@@ -92,7 +92,7 @@ def verify_otp():
     if not user_id or not otp_secret:
         return jsonify({"error": "No hay autenticación OTP pendiente"}), 400
 
-    data = request.get_json() or {}
+    data = request.cleaned_json
     token = data.get("token", "")
 
     if not re.match(r'^\d{6}$', token):

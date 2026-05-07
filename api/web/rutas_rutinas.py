@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, session
 import controlador_rutinas
+from funciones_auxiliares import sanitize_field
 
 bp = Blueprint('rutinas', __name__, url_prefix='/api/rutinas')
 
@@ -9,8 +10,8 @@ bp = Blueprint('rutinas', __name__, url_prefix='/api/rutinas')
 # =========================
 @bp.route("/base", methods=["GET"])
 def listar_rutinas_base():
-    objetivo = request.args.get("objetivo")
-    nivel = request.args.get("nivel")
+    objetivo = sanitize_field(request.args.get("objetivo", ""))
+    nivel = sanitize_field(request.args.get("nivel", ""))
     dias = request.args.get("dias", type=int)
 
     if not all([objetivo, nivel, dias]):
@@ -42,11 +43,15 @@ def guardar_rutina_usuario():
     if not usuario_id:
         return jsonify({"error": "No autenticado"}), 401
 
-    datos = request.get_json()
+    if not request.is_json:
+        return jsonify({"error": "Bad request"}), 400
+    datos = request.cleaned_json
     rutina_base_id = datos.get("rutina_base_id")
 
     if not rutina_base_id:
         return jsonify({"error": "rutina_base_id obligatorio"}), 400
+    if not isinstance(rutina_base_id, int):
+        return jsonify({"error": "rutina_base_id inválido"}), 400
 
     controlador_rutinas.guardar_rutina_usuario(
         usuario_id, rutina_base_id

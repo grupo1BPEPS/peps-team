@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from bd import obtener_conexion
+from funciones_auxiliares import sanitize_field
 
 bp = Blueprint("usuarios", __name__)
 
@@ -22,7 +23,7 @@ def ver_mi_perfil():
     user = cursor.fetchone()
     conn.close()
 
-    return jsonify(user), 200
+    return jsonify(sanitize_field(user)), 200
 
 
 # =========================
@@ -34,11 +35,15 @@ def editar_perfil():
     if not user_id:
         return jsonify({"error": "No autenticado"}), 401
 
-    data = request.get_json()
+    if not request.is_json:
+        return jsonify({"error": "Bad request"}), 400
+    data = request.cleaned_json
     nuevo_username = data.get("username")
 
     if not nuevo_username:
         return jsonify({"error": "username obligatorio"}), 400
+    if not isinstance(nuevo_username, str) or len(nuevo_username) < 4 or len(nuevo_username) > 12:
+        return jsonify({"error": "username inválido"}), 400
 
     conn = obtener_conexion()
     try:
@@ -65,12 +70,19 @@ def cambiar_password():
     if not user_id:
         return jsonify({"error": "No autenticado"}), 401
 
-    data = request.get_json()
+    if not request.is_json:
+        return jsonify({"error": "Bad request"}), 400
+    data = request.cleaned_json
     actual = data.get("password_actual")
     nueva = data.get("password_nueva")
 
     if not actual or not nueva:
         return jsonify({"error": "Datos incompletos"}), 400
+    
+    if not isinstance(actual, str) or not isinstance(nueva, str):
+        return jsonify({"error": "Datos inválidos"}), 400
+    if len(actual) > 128 or len(nueva) > 128:
+        return jsonify({"error": "Datos inválidos"}), 400
 
     conn = obtener_conexion()
     cursor = conn.cursor()

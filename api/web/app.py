@@ -1,10 +1,11 @@
-from flask import Flask
+from flask import Flask, request as flask_request
 from flask_cors import CORS
 from datetime import timedelta
 import os
 # app.py
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from api.web.funciones_auxiliares import sanitize_field
 
 
 limiter = Limiter(get_remote_address, default_limits=[])
@@ -34,9 +35,16 @@ def create_app():
     app.register_blueprint(ficheros_bp, url_prefix="/api/ficheros")
     app.register_blueprint(comentarios_bp, url_prefix="/api/comentarios")
     app.register_blueprint(usuarios_bp, url_prefix="/api/usuarios")
+    @app.before_request
+
+    @app.before_request
+    def clean_request():
+        if flask_request.is_json:
+            flask_request.cleaned_json = sanitize_field(
+                flask_request.get_json(silent=True) or {}
+            )
 
     return app
-
 if __name__ == "__main__":
     app = create_app()
     app.run(host="0.0.0.0", port=5000)
