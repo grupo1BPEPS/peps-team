@@ -4,5 +4,6 @@ RUN apk update; \
 # Copy apache vhost file to proxy php requests to php-fpm container
 COPY demo.apache.conf /usr/local/apache2/conf/demo.apache.conf
 COPY ./html /var/www/html
+RUN chmod 644 /var/www/html/*.html
 RUN echo "Include /usr/local/apache2/conf/demo.apache.conf" \
     >> /usr/local/apache2/conf/httpd.conf

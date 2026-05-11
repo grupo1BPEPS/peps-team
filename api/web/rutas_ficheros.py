@@ -1,7 +1,6 @@
-from flask import Blueprint, request, jsonify, session, current_app, send_from_directory, render_template
+from flask import Blueprint, request, jsonify, session, current_app, send_from_directory, render_template, make_response
 import controlador_ficheros
-
-
+from funciones_auxiliares import prepare_response_extra_headers
 
 bp = Blueprint('ficheros', __name__, url_prefix='/api/ficheros')
 
@@ -9,10 +8,12 @@ bp = Blueprint('ficheros', __name__, url_prefix='/api/ficheros')
 @bp.route('/subir', methods=['POST'])
 def subir():
     if 'id_usuario' not in session:
-        return jsonify({"error": "No autorizado"}), 401
-    
+        response = make_response(jsonify({"error": "No autorizado"}), 401)
+        return response
+
     if 'archivo' not in request.files:
-        return jsonify({"error": "No se envió el archivo"}), 400
+        response = make_response(jsonify({"error": "No se envió el archivo"}), 400)
+        return response
 
     file = request.files['archivo']
     user_id = session['id_usuario']
@@ -41,22 +42,29 @@ def galeria():
 @bp.route('/listar', methods=['GET'])
 def listar():
     if 'id_usuario' not in session:
-        return jsonify({"error": "No autorizado"}), 401
+        response = make_response(jsonify({"error": "No autorizado"}), 401)
+        return response
 
     user_id = session['id_usuario']
     lista = controlador_ficheros.obtener_ficheros_usuario(user_id)
-    return jsonify(lista), 200
+    response = make_response(jsonify(lista), 200)
+    response.headers.extend(prepare_response_extra_headers(True))
+    return response
 
 @bp.route('/ver/<nombre_archivo>')
 def ver_archivo(nombre_archivo):
     if 'id_usuario' not in session:
-        return jsonify({"error": "No autorizado"}), 401
+        response = make_response(jsonify({"error": "No autorizado"}), 401)
+        response.headers.extend(prepare_response_extra_headers(True))
+        return response
 
     user_id = session['id_usuario']
 
     # Seguridad mínima (opcional por ahora)
     if not controlador_ficheros.archivo_pertenece_usuario(nombre_archivo, user_id):
-        return jsonify({"error": "Acceso denegado"}), 403
+        response = make_response(jsonify({"error": "Acceso denegado"}), 403)
+        response.headers.extend(prepare_response_extra_headers(True))
+        return response
 
     ## Mandar archivo al navegador
     return send_from_directory(
@@ -92,8 +100,12 @@ def subir_foto_rutina(rutina_usuario_id):
 @bp.route('/rutina/<int:rutina_usuario_id>', methods=['GET'])
 def listar_fotos_rutina(rutina_usuario_id):
     if 'id_usuario' not in session:
-        return jsonify({"error": "No autorizado"}), 401
+        response = make_response(jsonify({"error": "No autorizado"}), 401)
+        response.headers.extend(prepare_response_extra_headers(True))
+        return response
 
     user_id = session['id_usuario']
     fotos = controlador_ficheros.obtener_ficheros_rutina(rutina_usuario_id, user_id)
-    return jsonify(fotos), 200
+    response = make_response(jsonify(fotos), 200)
+    response.headers.extend(prepare_response_extra_headers(True))
+    return response

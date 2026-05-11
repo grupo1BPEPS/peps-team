@@ -6,7 +6,10 @@ import os
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from funciones_auxiliares import sanitize_field
+from funciones_auxiliares import prepare_response_extra_headers 
 
+#Configuración de la cabecera
+extra_headers=prepare_response_extra_headers(True)
 
 limiter = Limiter(get_remote_address, default_limits=[])
 
@@ -35,16 +38,15 @@ def create_app():
     app.register_blueprint(ficheros_bp, url_prefix="/api/ficheros")
     app.register_blueprint(comentarios_bp, url_prefix="/api/comentarios")
     app.register_blueprint(usuarios_bp, url_prefix="/api/usuarios")
-    @app.before_request
-
-    @app.before_request
-    def clean_request():
-        if flask_request.is_json:
-            flask_request.cleaned_json = sanitize_field(
-                flask_request.get_json(silent=True) or {}
-            )
 
     return app
+
+def clean_request():
+    if flask_request.is_json:
+        flask_request.cleaned_json() == sanitize_field(
+            flask_request.get_json(silent=True) or {}
+        )
+
 if __name__ == "__main__":
     app = create_app()
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)

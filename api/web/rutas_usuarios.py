@@ -1,7 +1,8 @@
-from flask import Blueprint, jsonify, request, session
+from flask import Blueprint, jsonify, request, session, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from bd import obtener_conexion
 from funciones_auxiliares import sanitize_field
+from funciones_auxiliares import prepare_response_extra_headers
 
 bp = Blueprint("usuarios", __name__)
 
@@ -33,17 +34,26 @@ def ver_mi_perfil():
 def editar_perfil():
     user_id = session.get("id_usuario")
     if not user_id:
-        return jsonify({"error": "No autenticado"}), 401
+        response = make_response(jsonify({"error": "No autenticado"}), 401)
+        response.headers.extend(prepare_response_extra_headers(True))
+        return response
 
     if not request.is_json:
-        return jsonify({"error": "Bad request"}), 400
-    data = request.cleaned_json
+        response = make_response(jsonify({"error": "Bad request"}), 400)
+        response.headers.extend(prepare_response_extra_headers(True))
+        return response
+
+    data = request.cleaned_json()
     nuevo_username = data.get("username")
 
     if not nuevo_username:
-        return jsonify({"error": "username obligatorio"}), 400
+        response = make_response(jsonify({"error": "username obligatorio"}), 400)
+        response.headers.extend(prepare_response_extra_headers(True))
+        return response
     if not isinstance(nuevo_username, str) or len(nuevo_username) < 4 or len(nuevo_username) > 12:
-        return jsonify({"error": "username inválido"}), 400
+        response = make_response(jsonify({"error": "username inválido"}), 400)
+        response.headers.extend(prepare_response_extra_headers(True))
+        return response
 
     conn = obtener_conexion()
     try:
@@ -72,7 +82,7 @@ def cambiar_password():
 
     if not request.is_json:
         return jsonify({"error": "Bad request"}), 400
-    data = request.cleaned_json
+    data = request.cleaned_json()
     actual = data.get("password_actual")
     nueva = data.get("password_nueva")
 
