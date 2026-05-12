@@ -54,9 +54,9 @@ def guardar_rutina_usuario():
         response = make_response(jsonify({"error": "Bad request"}), 400)
         response.headers.extend(prepare_response_extra_headers(True))
         return response
-    datos = request.cleaned_json()
+    #Sanitizar y validar la entrada
+    datos = sanitize_field(request.get_json())
     rutina_base_id = datos.get("rutina_base_id")
-
     if not rutina_base_id:
         response = make_response(jsonify({"error": "rutina_base_id obligatorio"}), 400)
         response.headers.extend(prepare_response_extra_headers(True))

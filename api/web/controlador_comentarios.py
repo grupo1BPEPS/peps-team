@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template
 from bd import obtener_conexion
+from funciones_auxiliares import sanitize_field
+
 
 comentarios_bp = Blueprint('comentarios', __name__)
 
@@ -39,16 +41,16 @@ def ver_comentarios():
                 if rid not in rutinas:
                     rutinas[rid] = {
                         "id": rid,
-                        "nombre": fila["rutina_nombre"],
-                        "objetivo": fila["objetivo"],
+                        "nombre": sanitize_field(fila["rutina_nombre"]),
+                        "objetivo": sanitize_field(fila["objetivo"]),
                         "comentarios": []
                     }
 
                 if fila["comentario_id"]:
                     rutinas[rid]["comentarios"].append({
-                        "contenido": fila["contenido"],
+                        "contenido": sanitize_field(fila["contenido"]),
                         "fecha": fila["fecha"],
-                        "username": fila["username"]
+                        "username": sanitize_field(fila["username"])
                     })
 
     finally:

@@ -52,10 +52,9 @@ def registro():
         return response, 201
     except Exception as e:
         print("Error en registro:", e)
-        response = e
-        response.headers.extend(prepare_response_extra_headers(True))
-        return response, 409
-
+    response = make_response(jsonify({"error": "El usuario ya existe"}), 409)
+    response.headers.extend(prepare_response_extra_headers(True))
+    return response
 # ========== LOGIN ==========
 @bp.route("/login", methods=["POST"])
 @limiter.limit("5 per minute")

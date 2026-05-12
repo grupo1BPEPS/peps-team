@@ -72,7 +72,7 @@ def obtener_ficheros_usuario(user_id):
 
 def obtener_ficheros_rutina(rutina_usuario_id, user_id):
     conn = obtener_conexion()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor()
     cursor.execute(
         """
         SELECT nombre_original, nombre_guardado

@@ -43,7 +43,7 @@ def editar_perfil():
         response.headers.extend(prepare_response_extra_headers(True))
         return response
 
-    data = request.cleaned_json()
+    data = sanitize_field(request.get_json())
     nuevo_username = data.get("username")
 
     if not nuevo_username:
@@ -82,7 +82,7 @@ def cambiar_password():
 
     if not request.is_json:
         return jsonify({"error": "Bad request"}), 400
-    data = request.cleaned_json()
+    data = sanitize_field(request.get_json())
     actual = data.get("password_actual")
     nueva = data.get("password_nueva")
 
@@ -109,7 +109,7 @@ def cambiar_password():
 
     cursor.execute(
         "UPDATE usuarios SET password = %s WHERE id = %s",
-        (generate_password_hash(nueva), user_id)
+        (generate_password_hash(nueva, method='pbkdf2:sha256', salt_length=16), user_id)
     )
     conn.commit()
     conn.close()

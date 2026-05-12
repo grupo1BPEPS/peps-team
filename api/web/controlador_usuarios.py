@@ -58,7 +58,7 @@ def registrar_usuario(username, password):
             key = pyotp.random_base32()
             cursor.execute(
                 "INSERT INTO usuarios (username, password, is_active, otp_secret) VALUES (%s, %s, %s, %s)",
-                (username, generate_password_hash(password), 1, key)
+                (username, generate_password_hash(password, method='pbkdf2:sha256', salt_length=16), 1, key)
             )
             conn.commit()
             user_id = cursor.lastrowid
