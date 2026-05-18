@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Angular specific
 /dist/
 /out-tsc/
@@ -26,3 +27,11 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+=======
+# Created by venv; see https://docs.python.org/3/library/venv.html
+venv/
+.env
+__pycache__/
+*.pyc
+uploads/
+>>>>>>> 7b08dfa (Subida de dependencias)
