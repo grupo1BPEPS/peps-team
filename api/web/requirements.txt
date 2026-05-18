@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Flask
 flask-cors
 python-dotenv
@@ -10,3 +11,9 @@ pyotp
 qrcode
 pillow
 bleach
+=======
+PyMySQL
+Flask==1.1.4
+markupsafe==2.0.1
+python-dotenv
+>>>>>>> d011334 (Test)

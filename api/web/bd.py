@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # bd.py
 import os
 import pymysql
@@ -14,3 +15,14 @@ def obtener_conexion():
         database=os.getenv("DB_NAME"),
         cursorclass=pymysql.cursors.DictCursor
     )
+=======
+import os
+import pymysql
+
+def obtener_conexion():
+    return pymysql.connect(host=os.environ.get('DB_HOST'),
+                                user=os.environ.get('DB_USERNAME'),
+                                password=os.environ.get('DB_PASSWORD'),
+                                port=int(os.environ.get('DB_PORT', 3306)),
+                                db=os.environ.get('DB_DATABASE'))
+>>>>>>> d011334 (Test)

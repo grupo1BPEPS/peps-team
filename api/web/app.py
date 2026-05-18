@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from flask import Flask
 from flask_cors import CORS
 from datetime import timedelta
@@ -7,10 +8,16 @@ from flask_limiter.util import get_remote_address
 
 limiter = Limiter(get_remote_address, default_limits=[])
 
+=======
+from flask import Flask, jsonify
+import os
+from variables import cargarvariables
+>>>>>>> d011334 (Test)
 
 def create_app():
     app = Flask(__name__)
 
+<<<<<<< HEAD
     allowed_origin = os.getenv("ALLOWED_ORIGIN", "http://localhost")
     CORS(app, supports_credentials=True, origins=[allowed_origin])
 
@@ -44,3 +51,44 @@ def create_app():
 if __name__ == "__main__":
     app = create_app()
     app.run(host="0.0.0.0", port=5000, debug=False)
+=======
+    # configuración...
+    app.config.setdefault('DEBUG', True)
+
+    # Importar y registrar blueprints aquí (evita side-effects en import)
+    from rutas_usuarios import bp as usuarios_bp
+    app.register_blueprint(usuarios_bp, url_prefix='/api/usuarios')
+
+    from rutas_chuches import bp as chuches_bp
+    app.register_blueprint(chuches_bp, url_prefix='/api/chuches')
+
+    from rutas_ficheros import bp as ficheros_bp
+    app.register_blueprint(ficheros_bp, url_prefix='/api/ficheros')
+
+    from rutas_comentarios import bp as comentarios_bp
+    app.register_blueprint(comentarios_bp, url_prefix='/api/comentarios')
+
+    @app.route('/')
+    def index():
+        return render_template('index.html')
+
+
+    @app.errorhandler(500)
+    def server_error(error):
+        print('An exception occurred during a request. ERROR:' + error, flush=True)
+        ret={"status": "Internal Server Error"}
+        return jsonify(ret), 500
+
+    return app
+
+if __name__ == '__main__':
+    app = create_app()
+    try:
+        port = int(os.environ.get('PORT', 5001))
+        host = os.environ.get('HOST', '127.0.0.1')
+        app.run(host=host, port=port)
+    except Exception as e:
+        print(f"Error starting server: {e}", flush=True)
+
+    
+>>>>>>> d011334 (Test)

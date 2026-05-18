@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 FROM httpd:2.4.33-alpine
 RUN apk update; \
     apk upgrade;
@@ -6,4 +7,13 @@ COPY demo.apache.conf /usr/local/apache2/conf/demo.apache.conf
 COPY ./html /var/www/html
 RUN chmod 644 /var/www/html/*.html
 RUN echo "Include /usr/local/apache2/conf/demo.apache.conf" \
+=======
+FROM httpd:2.4.33-alpine
+RUN apk update; \
+    apk upgrade;
+# Copy apache vhost file to proxy php requests to php-fpm container
+COPY demo.apache.conf /usr/local/apache2/conf/demo.apache.conf
+COPY ./static/ /var/www/html
+RUN echo "Include /usr/local/apache2/conf/demo.apache.conf" \
+>>>>>>> d011334 (Test)
     >> /usr/local/apache2/conf/httpd.conf

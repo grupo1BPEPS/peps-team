@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import html
 import bleach
 
@@ -25,3 +26,13 @@ def prepare_response_extra_headers(is_json=True):
     if is_json:
         headers['Content-Security-Policy'] = "default-src 'none'; frame-ancestors 'none'"
     return headers
+=======
+import decimal
+import json
+
+class Encoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal): return float(obj)
+
+
+>>>>>>> d011334 (Test)
